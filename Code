@@ -1,0 +1,36 @@
+
+# Calculate the concentration of TNF-alpha for the experimental OD values
+experimental_od_values <- # Load required libraries
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(stats)
+
+data <- read_excel("BME335_finaldata1.xlsx")
+
+# Check the structure of the dataset
+str(data)
+head(data)
+
+# Rename columns, create subsections
+names(data) <- c("standard_conc", "standard_OD", "nanoparticle", "w_o_nanoparticle")
+
+# Linear model for OD (x var) vs. [TNF-alpha] (y var)
+lm(standard_OD ~ standard_conc, data = data)
+
+# Fit curve to data given
+ggplot(data, aes(x = standard_conc, y = standard_OD)) +
+  geom_point(color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "pink") +
+  labs(x = "Standard Optical Density", y = "TNF-alpha concentration", title = "Linear Regression: TNF-alpha Secreted per Standard OD")
+
+# Calculate the concentration of TNF-alpha for the experimental OD values
+experimental_od_values <- data$standard_OD
+predicted_concentrations <- predict(model_standard_curve, newdata = data.frame(standard_OD = experimental_od_values))
+
+# Compare the means of the nanoparticle vs w/o nanoparticle 
+t.test(data$nanoparticle, data$w_o_nanoparticle, na.action = na.omit)
+
+# Print the results
+cat("T-Critical:", t_test_result$statistic, "\n")
+cat("P-Value:", t_test_result$p.value, "\n")
